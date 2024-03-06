@@ -11,16 +11,14 @@ This Python program takes in a CSV file containing a history of hashes and their
 - Train a machine learning model
 - Predict future hashes based on the trained model
 
-- Evaluate the accuracy of the predictions
-
 ## Installation
 1. Clone the repository:
     ```shell
-    git clone https://github.com/your-username/predicting-hashes.git
+    git clone https://github.com/NellyBoi18/Predicting-Hashes.git
     ```
 2. Navigate to the project directory:
     ```shell
-    cd predicting-hashes
+    cd Predicting-Hashes
     ```
 3. Install the required dependencies:
     ```shell
@@ -28,19 +26,15 @@ This Python program takes in a CSV file containing a history of hashes and their
     ```
 
 ## Usage
-1. Place your CSV file containing the hash history in the project directory.
+1. Make sure historical_data.csv is in the same directory as predict_hashes.py. You can use provided historical_data.csv or create your own.
 2. Run the program:
     ```shell
-    python predict_hashes.py --input_file <csv_file_name>
+    python3 predict_hashes.py
     ```
-    Replace `<csv_file_name>` with the name of your CSV file.
-3. The program will generate predictions for future hashes and display the results.
+3. Input a hash to predict the result of.
 
 ## Contributing
 Contributions are welcome! If you find any issues or have suggestions for improvements, please open an issue or submit a pull request.
 
 ## License
 This project is licensed under the [MIT License](LICENSE).
-
-## Contact
-For any questions or inquiries, please contact [your-email@example.com](mailto:your-email@example.com).
