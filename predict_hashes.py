@@ -4,6 +4,16 @@ from sklearn.preprocessing import StandardScaler
 from keras.models import Sequential
 from keras.layers import Dense, Dropout
 import hashlib
+import tensorflow as tf
+
+# Define custom loss function to clip predicted values to be above 1
+def custom_loss(y_true, y_pred):
+    return tf.reduce_mean(tf.square(tf.maximum(y_pred, 1) - y_true), axis=-1)
+
+# Encode hash strings into numerical features using hash functions
+def hash_to_numeric(hash_string):
+    hash_numeric = int(hashlib.sha256(hash_string.encode()).hexdigest(), 16)
+    return hash_numeric
 
 # Read historical data from CSV file
 historical_data = pd.read_csv('historical_data_numerical.csv')
@@ -11,11 +21,6 @@ historical_data = pd.read_csv('historical_data_numerical.csv')
 # Extract hashes and results
 historical_hashes = historical_data['Hashes'].values
 historical_results = historical_data['Results'].values.astype(float)  # Ensure results are represented as floats
-
-# Encode hash strings into numerical features using hash functions
-def hash_to_numeric(hash_string):
-    hash_numeric = int(hashlib.sha256(hash_string.encode()).hexdigest(), 16)
-    return hash_numeric
 
 historical_hashes_numeric = np.array([hash_to_numeric(hash_str) for hash_str in historical_hashes]).reshape(-1, 1)
 
@@ -29,10 +34,10 @@ model.add(Dense(64, input_dim=1, activation='relu')) # 128 vs 64 neurons
 model.add(Dense(64, activation='relu'))
 model.add(Dropout(0.5)) # Prevent overfitting
 # model.add(Dense(1, activation='linear'))  # Output layer with linear activation for regression
-model.add(Dense(1, activation='sigmoid')) # Sigmoid activation for non-linear regression
+model.add(Dense(1, activation='relu')) # ReLu activation for non-linear regression
 
 # Compile the model
-model.compile(optimizer='adam', loss='mean_squared_error')
+model.compile(optimizer='adam', loss='custom_loss')
 
 # Train the model
 model.fit(historical_hashes_scaled, historical_results, epochs=100, batch_size=32, verbose=0)
