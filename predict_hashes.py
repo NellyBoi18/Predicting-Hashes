@@ -1,10 +1,11 @@
+import hashlib
 import numpy as np
 import pandas as pd
+import tensorflow as tf
 from sklearn.preprocessing import StandardScaler
 from keras.models import Sequential
 from keras.layers import Dense, Dropout
-import hashlib
-import tensorflow as tf
+from keras.utils import custom_object_scope
 
 # Define custom loss function to clip predicted values to be above 1
 def custom_loss(y_true, y_pred):
@@ -32,12 +33,12 @@ historical_hashes_scaled = scaler.fit_transform(historical_hashes_numeric)
 model = Sequential()
 model.add(Dense(64, input_dim=1, activation='relu')) # 128 vs 64 neurons
 model.add(Dense(64, activation='relu'))
-model.add(Dropout(0.5)) # Prevent overfitting
+# model.add(Dropout(0.5)) # Prevent overfitting
 # model.add(Dense(1, activation='linear'))  # Output layer with linear activation for regression
 model.add(Dense(1, activation='relu')) # ReLu activation for non-linear regression
 
 # Compile the model
-model.compile(optimizer='adam', loss='custom_loss')
+model.compile(optimizer='adam', loss='mean_squared_error')
 
 # Train the model
 model.fit(historical_hashes_scaled, historical_results, epochs=100, batch_size=32, verbose=0)
@@ -57,7 +58,7 @@ def predict_result(hash_input):
 
 # Loop for predicting future hashes
 while True:
-    user_input_hash = input("Enter the hash (or type 'exit' to quit): ")
+    user_input_hash = input("Enter the hash (or 'exit' to quit): ")
     
     if user_input_hash.lower() == 'exit':
         print("Exiting the program.")
