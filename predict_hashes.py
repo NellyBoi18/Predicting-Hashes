@@ -7,22 +7,19 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout
 from keras.utils import custom_object_scope
 
-# Define custom loss function to clip predicted values to be above 1
-def custom_loss(y_true, y_pred):
-    return tf.reduce_mean(tf.square(tf.maximum(y_pred, 1) - y_true), axis=-1)
-
 # Encode hash strings into numerical features using hash functions
 def hash_to_numeric(hash_string):
     hash_numeric = int(hashlib.sha256(hash_string.encode()).hexdigest(), 16)
     return hash_numeric
 
 # Read historical data from CSV file
-historical_data = pd.read_csv('historical_data_numerical.csv')
+historical_data = pd.read_csv('historical_data.csv')
 
 # Extract hashes and results
 historical_hashes = historical_data['Hashes'].values
 historical_results = historical_data['Results'].values.astype(float)  # Ensure results are represented as floats
 
+# Convert hashes to numerical features
 historical_hashes_numeric = np.array([hash_to_numeric(hash_str) for hash_str in historical_hashes]).reshape(-1, 1)
 
 # Standardize features by removing the mean and scaling to unit variance
@@ -31,9 +28,9 @@ historical_hashes_scaled = scaler.fit_transform(historical_hashes_numeric)
 
 # Create a neural network model
 model = Sequential()
-model.add(Dense(64, input_dim=1, activation='relu')) # 128 vs 64 neurons
-model.add(Dense(64, activation='relu'))
-# model.add(Dropout(0.5)) # Prevent overfitting
+model.add(Dense(128, input_dim=1, activation='relu')) # 128 vs 64 neurons?
+model.add(Dense(128, activation='relu'))
+model.add(Dropout(0.5)) # Prevent overfitting
 # model.add(Dense(1, activation='linear'))  # Output layer with linear activation for regression
 model.add(Dense(1, activation='relu')) # ReLu activation for non-linear regression
 
@@ -44,7 +41,6 @@ model.compile(optimizer='adam', loss='mean_squared_error')
 model.fit(historical_hashes_scaled, historical_results, epochs=100, batch_size=32, verbose=0)
 # history = model.fit(historical_hashes_scaled, historical_results, epochs=100, batch_size=32, verbose=1)
 # print("Loss history:", history.history['loss'])
-
 
 # Function to predict the result of a given hash
 def predict_result(hash_input):
